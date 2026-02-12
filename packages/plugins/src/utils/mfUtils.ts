@@ -32,7 +32,10 @@ export function toRemotesCodeString(remotes: Remote[]): string {
       res.push(`${aliasName}: {
   aliasName: "${aliasName}",
   remoteName: "${remoteName}",        
-  entry: "${r.entry}"
+  entry: (() => {
+    const entry = (${JSON.stringify(r)})['entry'];
+    return /^(https?:)?\\/\\//.test(entry)? entry : (new Function('return ' + entry))()
+  })() 
 }`);
     }
 
@@ -40,7 +43,10 @@ export function toRemotesCodeString(remotes: Remote[]): string {
       res.push(`${aliasName}: {
   aliasName: "${aliasName}",
   remoteName: "${remoteName}",        
-  entry: (${JSON.stringify(r.entries)})[${r.keyResolver}]
+  entry: (() => {
+    const entry = (${JSON.stringify(r.entries)})[${r.keyResolver}];
+    return /^(https?:)?\\/\\//.test(entry)? entry : (new Function('return ' + entry))()
+  })() 
 }`);
     }
   }
