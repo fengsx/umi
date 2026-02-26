@@ -2,6 +2,7 @@ type SimpleRemote = {
   entry: string;
   name: string;
   aliasName?: string;
+  runtimeEntryPath?: object;
 };
 
 type RemoteEntries = {
@@ -9,6 +10,7 @@ type RemoteEntries = {
   entries: object;
   keyResolver: string;
   aliasName?: string;
+  runtimeEntryPath?: object;
 };
 
 type Remote = SimpleRemote | RemoteEntries;
@@ -31,22 +33,22 @@ export function toRemotesCodeString(remotes: Remote[]): string {
     if (isSimpleRemote(r)) {
       res.push(`${aliasName}: {
   aliasName: "${aliasName}",
-  remoteName: "${remoteName}",        
-  entry: (() => {
-    const entry = (${JSON.stringify(r)})['entry'];
-    return /^(https?:)?\\/\\//.test(entry)? entry : (new Function('return ' + entry))()
-  })() 
+  remoteName: "${remoteName}",
+  entry: ${
+    r.runtimeEntryPath ? `window["mf_${r.name}EntryPath"]` : `"${r.entry}"`
+  }
 }`);
     }
 
     if (isRemoteEntries(r)) {
       res.push(`${aliasName}: {
   aliasName: "${aliasName}",
-  remoteName: "${remoteName}",        
-  entry: (() => {
-    const entry = (${JSON.stringify(r.entries)})[${r.keyResolver}];
-    return /^(https?:)?\\/\\//.test(entry)? entry : (new Function('return ' + entry))()
-  })() 
+  remoteName: "${remoteName}",
+  entry: ${
+    r.runtimeEntryPath
+      ? `window["mf_${r.name}EntryPath"]`
+      : `(${JSON.stringify(r.entries)})[${r.keyResolver}]`
+  }
 }`);
     }
   }

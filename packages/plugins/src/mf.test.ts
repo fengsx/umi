@@ -55,7 +55,7 @@ test('mf plugin add remotes with entries for different env', async () => {
   const entries = {"key1":"http://a.b/c.js","key2":"http://a.b/c.js"};
   const key = "key1";
 
-  const remoteUrlWithVersion = entries[key];
+  const remoteUrlWithVersion = entries[key]
   const script = document.createElement('script')
   script.src = remoteUrlWithVersion
   script.onload = () => {
